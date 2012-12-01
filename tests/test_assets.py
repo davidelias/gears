@@ -3,6 +3,7 @@ import os
 import sys
 
 from gears.assets import CircularDependencyError, Asset, StaticAsset, build_asset
+from gears.compat import str, bytes
 from gears.environment import Environment
 from gears.finders import FileSystemFinder
 
@@ -50,15 +51,15 @@ class AssetTests(TestCase):
     def test_unicode_support(self):
         output = read(os.path.join(FIXTURES_DIR, 'unicode_support', 'output.js'))
         asset = get_asset('unicode_support')
-        if sys.version_info < (3, 0):
-            asset_output = unicode(asset)
-        else:
-            asset_output = str(asset)
-        self.assertEqual(asset_output, output)
+        self.assertEqual(str(asset), output)
 
     def test_is_iterable(self):
         asset = get_asset('unicode_support')
         tuple(asset)
+
+    def test_is_convertible_to_bytes(self):
+        asset = get_asset('unicode_support')
+        bytes(asset)
 
 
 class StaticAssetTests(TestCase):
@@ -70,6 +71,10 @@ class StaticAssetTests(TestCase):
     def test_is_iterable(self):
         asset = get_static_asset('static_source')
         tuple(asset)
+
+    def test_is_convertible_to_bytes(self):
+        asset = get_static_asset('static_source')
+        bytes(asset)
 
 
 class BuildAssetTests(TestCase):
