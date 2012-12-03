@@ -164,6 +164,10 @@ class BaseAsset(object):
     def __repr__(self):
         return '<%s absolute_path=%s>' % (self.__class__.__name__, self.absolute_path)
 
+    @cached_property
+    def mtime(self):
+        return os.stat(self.absolute_path).st_mtime
+
 
 class Asset(UnicodeMixin, BaseAsset):
 
@@ -186,7 +190,7 @@ class Asset(UnicodeMixin, BaseAsset):
     def __iter__(self):
         return iter(str(self).encode('utf-8'))
 
-    @property
+    @cached_property
     def cached_data(self):
         return self.cache.get(self._get_cache_key())
 
@@ -226,10 +230,6 @@ class Asset(UnicodeMixin, BaseAsset):
             compressed_source = compress(self)
         self.cache.set(cache_key, compressed_source)
         return compressed_source
-
-    @cached_property
-    def mtime(self):
-        return os.stat(self.absolute_path).st_mtime
 
     @cached_property
     def hexdigest(self):
