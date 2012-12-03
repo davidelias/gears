@@ -1,3 +1,4 @@
+import shutil
 import hashlib
 import os
 try:
@@ -43,6 +44,12 @@ class FileBasedCache(object):
                 return pickle.load(f)
         except (IOError, OSError, EOFError, pickle.PickleError):
             return None
+
+    def clear(self):
+        try:
+            shutil.rmtree(self.root)
+        except (IOError, OSError):
+            pass
 
     def _get_filepath(self, key):
         relpath = hashlib.sha1(key.encode('utf-8')).hexdigest()
